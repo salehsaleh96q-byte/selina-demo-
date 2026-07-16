@@ -1,0 +1,461 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------------------
+   Design Tokens — Selina Derma
+   --------------------------------------------------------------------------- */
+:root {
+  --color-white: #ffffff;
+  --color-cream: #fdf8f6; /* خلفية أساسية ناعمة */
+  --color-rose-gold: #b76e79; /* اللون الأساسي للهوية */
+  --color-rose-gold-light: #e8c4c0; /* للخلفيات والتفاصيل الخفيفة */
+  --color-rose-gold-dark: #9a5560; /* للنصوص/الأزرار عند hover */
+  --color-charcoal: #2b2520; /* النص الأساسي */
+  --color-charcoal-soft: #6b5f58; /* نص ثانوي */
+}
+
+/* Expose tokens + fonts to Tailwind utilities (bg-rose-gold, text-charcoal …) */
+@theme {
+  --color-white: #ffffff;
+  --color-cream: #fdf8f6;
+  --color-rose-gold: #b76e79;
+  --color-rose-gold-light: #e8c4c0;
+  --color-rose-gold-dark: #9a5560;
+  --color-charcoal: #2b2520;
+  --color-charcoal-soft: #6b5f58;
+
+  --radius-soft: 12px;
+}
+
+/* ---------------------------------------------------------------------------
+   Base
+   --------------------------------------------------------------------------- */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-cream);
+  color: var(--color-charcoal);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Body typography switches with language */
+html[lang="ar"] body {
+  font-family: var(--font-tajawal), system-ui, sans-serif;
+}
+html[lang="en"] body {
+  font-family: var(--font-inter), system-ui, sans-serif;
+}
+
+/* Display headings — light & elegant, never heavy bold */
+.font-display {
+  font-weight: 400;
+  line-height: 1.15;
+}
+html[lang="ar"] .font-display {
+  font-family: var(--font-markazi), serif;
+  font-weight: 500;
+}
+html[lang="en"] .font-display {
+  font-family: var(--font-cormorant), serif;
+  font-weight: 300;
+}
+
+/* ---------------------------------------------------------------------------
+   Signature Element — hairline rose-gold draw-in (home H1 only)
+   --------------------------------------------------------------------------- */
+.signature-line {
+  width: 0;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(
+    90deg,
+    var(--color-rose-gold),
+    var(--color-rose-gold-light)
+  );
+  animation: drawLine 1.2s ease-out forwards;
+  animation-delay: 0.3s;
+}
+
+@keyframes drawLine {
+  to {
+    width: 120px;
+  }
+}
+
+/* RTL mirrors the draw direction so it grows from the start edge */
+html[dir="rtl"] .signature-line {
+  margin-inline-start: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .signature-line {
+    width: 120px;
+    animation: none;
+  }
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* Gentle fade-up used by sections */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.fade-up {
+  animation: fadeUp 0.6s ease-out both;
+}
+
+/* Accordion */
+.accordion-panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.3s ease;
+}
+.accordion-panel[data-open="true"] {
+  grid-template-rows: 1fr;
+}
+.accordion-panel > div {
+  overflow: hidden;
+}
+
+/* ---------------------------------------------------------------------------
+   Scroll-reveal engine
+   --------------------------------------------------------------------------- */
+.reveal {
+  opacity: 0;
+  transform: translateY(26px);
+  transition:
+    opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+  will-change: opacity, transform;
+}
+.reveal-left {
+  transform: translateX(-30px);
+}
+.reveal-right {
+  transform: translateX(30px);
+}
+.reveal-scale {
+  transform: scale(0.93);
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* ---------------------------------------------------------------------------
+   Hero ambiance — slow drifting gradient blobs
+   --------------------------------------------------------------------------- */
+@keyframes floatBlob {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(24px, -32px) scale(1.08);
+  }
+  66% {
+    transform: translate(-18px, 22px) scale(0.95);
+  }
+}
+.blob {
+  animation: floatBlob 16s ease-in-out infinite;
+}
+.blob-slow {
+  animation-duration: 22s;
+  animation-direction: reverse;
+}
+
+/* ---------------------------------------------------------------------------
+   Micro-interactions
+   --------------------------------------------------------------------------- */
+.card-hover {
+  transition:
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.35s ease,
+    border-color 0.35s ease;
+}
+.card-hover:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 24px 48px -24px rgba(183, 110, 121, 0.35);
+  border-color: rgba(183, 110, 121, 0.45);
+}
+.icon-pop {
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.card-hover:hover .icon-pop,
+.group:hover .icon-pop {
+  transform: scale(1.12) rotate(-4deg);
+}
+
+/* Shine sweep for primary buttons */
+.btn-shine {
+  position: relative;
+  overflow: hidden;
+}
+.btn-shine::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    120deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.4) 50%,
+    transparent 70%
+  );
+  transform: translateX(-160%);
+  transition: transform 0.7s ease;
+}
+.btn-shine:hover::after {
+  transform: translateX(160%);
+}
+
+/* Animated hairline divider under section headings */
+@keyframes growUnderline {
+  to {
+    transform: scaleX(1);
+  }
+}
+.heading-underline {
+  display: block;
+  height: 2px;
+  width: 56px;
+  border-radius: 2px;
+  background: linear-gradient(
+    90deg,
+    var(--color-rose-gold),
+    var(--color-rose-gold-light)
+  );
+  transform: scaleX(0);
+  transform-origin: var(--underline-origin, left);
+  transition: transform 0.8s ease 0.15s;
+}
+html[dir="rtl"] .heading-underline {
+  transform-origin: right;
+}
+.reveal.is-visible .heading-underline,
+.is-visible.heading-underline {
+  transform: scaleX(1);
+}
+
+/* Mobile menu slide-down */
+@keyframes menuIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.menu-in {
+  animation: menuIn 0.25s ease-out both;
+}
+
+/* ---------------------------------------------------------------------------
+   Premium effects — scroll progress, cursor glow, grain, marquee, tilt, ken burns
+   --------------------------------------------------------------------------- */
+
+/* Scroll progress bar */
+.scroll-progress {
+  position: fixed;
+  inset-block-start: 0;
+  inset-inline: 0;
+  height: 3px;
+  z-index: 60;
+  transform-origin: left center;
+  transform: scaleX(0);
+  background: linear-gradient(
+    90deg,
+    var(--color-rose-gold-dark),
+    var(--color-rose-gold),
+    var(--color-rose-gold-light)
+  );
+  will-change: transform;
+}
+html[dir="rtl"] .scroll-progress {
+  transform-origin: right center;
+}
+
+/* Cursor glow — soft rose spotlight following the pointer (desktop only) */
+.cursor-glow {
+  position: fixed;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  width: 460px;
+  height: 460px;
+  margin-inline-start: -230px;
+  margin-block-start: -230px;
+  border-radius: 9999px;
+  pointer-events: none;
+  z-index: 30;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+  background: radial-gradient(
+    circle closest-side,
+    rgba(183, 110, 121, 0.16),
+    transparent 100%
+  );
+  mix-blend-mode: multiply;
+  will-change: transform;
+}
+@media (hover: none) {
+  .cursor-glow {
+    display: none;
+  }
+}
+
+/* Grain / noise overlay for editorial texture */
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: 55;
+  pointer-events: none;
+  opacity: 0.5;
+  mix-blend-mode: soft-light;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Marquee ribbon */
+.marquee {
+  overflow: hidden;
+  white-space: nowrap;
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    transparent,
+    #000 8%,
+    #000 92%,
+    transparent
+  );
+  mask-image: linear-gradient(
+    90deg,
+    transparent,
+    #000 8%,
+    #000 92%,
+    transparent
+  );
+}
+.marquee-track {
+  display: inline-flex;
+  align-items: center;
+  width: max-content;
+  animation: marquee 32s linear infinite;
+}
+html[dir="rtl"] .marquee-track {
+  animation-direction: reverse;
+}
+.marquee:hover .marquee-track {
+  animation-play-state: paused;
+}
+.marquee-item {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-cormorant), var(--font-markazi), serif;
+  font-size: 1.75rem;
+  color: var(--color-rose-gold-dark);
+}
+.marquee-star {
+  margin-inline: 1.75rem;
+  color: var(--color-rose-gold-light);
+  font-size: 1rem;
+}
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* 3D tilt cards */
+.tilt {
+  transform-style: preserve-3d;
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+/* Ken Burns slow zoom for hero image */
+@keyframes kenBurns {
+  from {
+    transform: scale(1.12);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+.ken-burns {
+  animation: kenBurns 12s ease-out forwards;
+}
+
+/* Shimmer gradient on a highlighted word */
+.shimmer-text {
+  background: linear-gradient(
+    100deg,
+    var(--color-rose-gold-dark) 20%,
+    var(--color-rose-gold) 40%,
+    var(--color-rose-gold-light) 55%,
+    var(--color-rose-gold) 70%,
+    var(--color-rose-gold-dark) 90%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: shimmer 6s linear infinite;
+}
+@keyframes shimmer {
+  to {
+    background-position: 200% center;
+  }
+}
+
+/* Floating badge bob */
+@keyframes bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+.bob {
+  animation: bob 4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .reveal-left,
+  .reveal-right,
+  .reveal-scale {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none;
+  }
+  .blob,
+  .marquee-track,
+  .ken-burns,
+  .shimmer-text,
+  .bob {
+    animation: none;
+  }
+  .heading-underline {
+    transform: scaleX(1);
+    transition: none;
+  }
+  .cursor-glow,
+  .grain {
+    display: none;
+  }
+  .shimmer-text {
+    color: var(--color-rose-gold);
+  }
+}
